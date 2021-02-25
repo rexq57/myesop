@@ -10,12 +10,9 @@
     "128": "icon.gif"
   },
   "permissions": [ 
-    "tabs" 
+    "tabs", "http://*/*", "https://*/*"
   ],
-  "content_scripts": [
-    {
-      "matches": ["https://esop2.futuhk.com/homepage"],
-      "js": ["jquery-1.7.2.js", "esop.js"]
-    }
-  ]
+  "background": {
+    "scripts": ["background.js"]
+  }
 }

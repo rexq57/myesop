@@ -2,11 +2,12 @@
 var global_scale = 0.1;
 
 // 自定义股票数据
-var data = {"当前股价":-1,
+var data = {"当前股价":-1, 			// -1则使用页面上显示的价格
 			"待归属期权股数":5558,
-            "可行权期权股数":46773,
+            "可行权期权股数":46772,
 			"已行权待出售股数":0,
-			"可出售股数":0
+			"可出售股数":0,
+			"人民币税后比例":0.8*0.83,
 			};
 
 // 全局开关
@@ -191,6 +192,10 @@ function modify_all() {
 		modify_obj_set(marketable_stock_number(), data["可出售股数"]);
 		modify_obj_set(marketable_stock_value(), data["可出售股数"]*data["当前股价"]);
 
+		// 修改自定义内容
+		// modify_obj_set(now_money_value(), data["可行权期权股数"]*data["当前股价"]*0.8*0.83);
+		append_element(data["可行权期权股数"]*data["当前股价"]*data["人民币税后比例"]);
+
 		// 修改归属日历内容
 		$(".vest").each(function(){
 			var data = $(this).find("div").get(2);
@@ -228,65 +233,86 @@ function modify_all() {
 	$(exercisable_option_value2()).one('DOMSubtreeModified', modify_func);
 }
 
-// $( window ).on("load", function() {
-// 	console.log("fuck200");
-// });
+function log_element(str) {
 
-function onInit(){
-	console.log("222222", kwai);
+	var kwai = document.querySelector(str);
+	console.log("fuck100", kwai);
 }
 
-window.addEventListener('DOMContentLoaded', (event) => {
-    console.log('DOM fully loaded and parsed');
-});
+function append_element(value) {
+	var int_part = modify_str(parseInt(value).toString(), modify_int);
+	var float_part = parseInt((value - parseInt(value))*100);
+	var line_div = document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2)");
+	line_div.innerHTML = line_div.innerHTML + '<div></div><div data-v-70616896="" class="summary-item pending-exercise">\
+	<div data-v-70616896="" class="summary-title">可行权期权价值 (CNY)\
+        <span data-v-70616896="" class="tax-tag">税后</span> <div data-v-0afa8121="" data-v-70616896="" class="ui-notice tips-wrapper"><span data-v-0afa8121="" class="ui-notice-trigger"><i data-v-0afa8121="" class="ui-icon icon-trigger icon-tips"></i></span> <div data-v-0afa8121="" class="ui-notice-mask" style="display: none;"></div> <div data-v-0afa8121="" class="ui-notice-wrapper" style="left: 20px; top: 20px;"><div data-v-0afa8121="" class="ui-notice-content"><i data-v-0afa8121="" class="ui-icon icon-close ui-notice-close"></i> <div data-v-0afa8121="" class="ui-notice-text"><p data-v-70616896="" data-v-0afa8121="" class="tips-item">已行权待出售价值=行权后获得且未卖出的股票数量*上个交易日收盘价</p></div></div></div></div></div>\
+		<div data-v-70616896="" class=""><span data-v-70616896="" class="exact-value"><span data-v-70616896="" class="value-integer">'+int_part+'</span><span data-v-70616896="" class="value-dot">.</span><span data-v-70616896="" class="value-float">'+float_part+'</span></span></div>\
+	</div>';
+}
+
+function now_money_value() {
+	return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2) > div:nth-child(4) > div:nth-child(2)");
+}
 
 //$(function () {
 $(function () {
 
 	if (global_switch) {
 
-		var kwai = document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary");
-		console.log("fuck100", kwai);
+		var body = document.querySelector("body");
+		$(body).one("DOMSubtreeModified", function(){
 
-		// var a = document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-left > div > div");
-		// console.log("fuck", a);
-		// $(a).one("DOMSubtreeModified", function(){
-		// 	console.log("fuck1");
-		// });
+			// append_element();
+			// test		
+			log_element("body");
+			log_element("body > div:nth-child(3)");
+			log_element("body > div:nth-child(3) > div");
+			log_element("body > div:nth-child(3) > div > div.page-main");
+			log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper");
+			log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div");
+			log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2)");
+			log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div");
+			log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary");
 
-		var b = estimated_total_option_value();
-		if (b != null) {
-			$(b).one("DOMSubtreeModified", function(){
-				// console.log("fuck", estimated_total_option_value());
-				modify_all();
-			});
-		} else {
-			// console.log($("body").html);
-		}
+			var b = estimated_total_option_value();
+			if (b != null) {
+				$(b).one("DOMSubtreeModified", function(){
+					// console.log("fuck", estimated_total_option_value());
+					modify_all();
+				});
+			} else {
+				// console.log($("body").html);
+			}
 
-		console.log("fuck2", b);
+			// console.log("fuck2", b);
 
-		// // 拦截菊花
-		// var hub = document.querySelector("body > div.js-toast-container > div.ui-toast-box._u-modal-box");
-		// if (hub !== undefined) {
-		// 	console.log("[esop] 添加监听!");
-		// 	// 这个页面加载过迟，到这里数据已经刷新
-		// 	var observer = new MutationObserver(function(mutations) {
-		// 		mutations.forEach(function(mutation) {
-		// 		if (mutation.attributeName === "class") {
-		// 			var attributeValue = $(mutation.target).prop(mutation.attributeName);
-		// 			//console.log("Class attribute changed to:", attributeValue);
-		// 			console.log("[esop] 菊花动画出现，准备修改数据.");
-		// 			modify_all();
-		// 		}
-		// 		});
-		// 	});
-		// 	observer.observe(hub, {
-		// 		attributes: true
-		// 	});
-		// } else {
-		// 	console.log("[esop] 没找到hub菊花!");
-		// }
+			// 拦截菊花 (可能闪现真实数值)
+			// var hub = document.querySelector("body > div.js-toast-container > div.ui-toast-box._u-modal-box");
+			// if (hub !== undefined) {
+			// 	console.log("[esop] 添加监听!");
+			// 	// 这个页面加载过迟，到这里数据已经刷新
+			// 	var observer = new MutationObserver(function(mutations) {
+			// 		mutations.forEach(function(mutation) {
+			// 		if (mutation.attributeName === "class") {
+			// 			var attributeValue = $(mutation.target).prop(mutation.attributeName);
+			// 			//console.log("Class attribute changed to:", attributeValue);
+			// 			console.log("[esop] 菊花动画出现，准备修改数据.");
+			// 			modify_all();
+			// 		}
+			// 		});
+			// 	});
+			// 	observer.observe(hub, {
+			// 		attributes: true
+			// 	});
+			// } else {
+			// 	console.log("[esop] 没找到hub菊花!");
+			// }
+		});
+
+
+		
+
+		
 	}
 });
 
