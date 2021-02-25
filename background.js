@@ -10,9 +10,7 @@ function updateTab(tabId, info, tab) {	//���û�ˢ��tab
 	chrome.tabs.getSelected(null, function(tab) {
         cur_tab = tab;
 		
-		if (info.status == "complete") {
-			tabPageHandle(tabId, tab);
-		}
+		tabPageHandle(tabId, info, tab);
     });
 }
 
@@ -83,8 +81,17 @@ function getHttpDomain(url)
 	return httpDomain;
 }
 
-function tabPageHandle(tabId, tab)
+function isFutuUrl(url)
 {
+	return url.indexOf("esop2.futuhk.com") != -1 || url.indexOf("esop2.futu5.com") != -1;
+}
+
+function tabPageHandle(tabId, info, tab)
+{
+	if (info.status != "complete" || !isFutuUrl(tab.url)) {
+		return;
+	}
+
 	chrome.tabs.executeScript(tabId, {file: "jquery-1.7.2.js"});
 	chrome.tabs.executeScript(tabId, {file: "esop.js"});
 }

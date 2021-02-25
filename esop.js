@@ -12,6 +12,8 @@ var data = {"当前股价":-1, 			// -1则使用页面上显示的价格
 
 // 全局开关
 var global_switch = true;
+// 显示附加标签
+var display_append_label = true;
 
 Number.prototype.format = function(n, x) {
     var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\.' : '$') + ')';
@@ -193,8 +195,10 @@ function modify_all() {
 		modify_obj_set(marketable_stock_value(), data["可出售股数"]*data["当前股价"]);
 
 		// 修改自定义内容
-		// modify_obj_set(now_money_value(), data["可行权期权股数"]*data["当前股价"]*0.8*0.83);
-		append_element(data["可行权期权股数"]*data["当前股价"]*data["人民币税后比例"]);
+		if (display_append_label) {
+			// modify_obj_set(now_money_value(), data["可行权期权股数"]*data["当前股价"]*0.8*0.83);
+			append_element(data["可行权期权股数"]*data["当前股价"]*data["人民币税后比例"]);
+		}
 
 		// 修改归属日历内容
 		$(".vest").each(function(){
@@ -204,6 +208,7 @@ function modify_all() {
    
    };
 
+   // 当前昨日价格标签重新刷新后，触发所有标签的二次修改
 	$(yes_price()).one("DOMSubtreeModified", function(){
 		console.log('[esop] refresh by price update!');
 		modify_func();
@@ -254,6 +259,32 @@ function now_money_value() {
 	return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2) > div:nth-child(4) > div:nth-child(2)");
 }
 
+// 暂不使用这个方法
+function hub_ready() {
+
+	// 拦截菊花 (可能闪现真实数值)
+	var hub = document.querySelector("body > div.js-toast-container > div.ui-toast-box._u-modal-box");
+	if (hub !== undefined) {
+		console.log("[esop] 添加监听!");
+		// 这个页面加载过迟，到这里数据已经刷新
+		var observer = new MutationObserver(function(mutations) {
+			mutations.forEach(function(mutation) {
+			if (mutation.attributeName === "class") {
+				var attributeValue = $(mutation.target).prop(mutation.attributeName);
+				//console.log("Class attribute changed to:", attributeValue);
+				console.log("[esop] 菊花动画出现，准备修改数据.");
+				modify_all();
+			}
+			});
+		});
+		observer.observe(hub, {
+			attributes: true
+		});
+	} else {
+		console.log("[esop] 没找到hub菊花!");
+	}
+}
+
 //$(function () {
 $(function () {
 
@@ -263,7 +294,7 @@ $(function () {
 		$(body).one("DOMSubtreeModified", function(){
 
 			// append_element();
-			// test		
+			// test: 打印元素是否生效
 			log_element("body");
 			log_element("body > div:nth-child(3)");
 			log_element("body > div:nth-child(3) > div");
@@ -274,6 +305,7 @@ $(function () {
 			log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div");
 			log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary");
 
+			// 预估期权总价值标签修改后，尝试触发数值修改
 			var b = estimated_total_option_value();
 			if (b != null) {
 				$(b).one("DOMSubtreeModified", function(){
@@ -281,32 +313,9 @@ $(function () {
 					modify_all();
 				});
 			} else {
-				// console.log($("body").html);
+				console.log("body内容未加载");
 			}
-
-			// console.log("fuck2", b);
-
-			// 拦截菊花 (可能闪现真实数值)
-			// var hub = document.querySelector("body > div.js-toast-container > div.ui-toast-box._u-modal-box");
-			// if (hub !== undefined) {
-			// 	console.log("[esop] 添加监听!");
-			// 	// 这个页面加载过迟，到这里数据已经刷新
-			// 	var observer = new MutationObserver(function(mutations) {
-			// 		mutations.forEach(function(mutation) {
-			// 		if (mutation.attributeName === "class") {
-			// 			var attributeValue = $(mutation.target).prop(mutation.attributeName);
-			// 			//console.log("Class attribute changed to:", attributeValue);
-			// 			console.log("[esop] 菊花动画出现，准备修改数据.");
-			// 			modify_all();
-			// 		}
-			// 		});
-			// 	});
-			// 	observer.observe(hub, {
-			// 		attributes: true
-			// 	});
-			// } else {
-			// 	console.log("[esop] 没找到hub菊花!");
-			// }
+			
 		});
 
 
