@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+  "name": "My ESOP",
+  "version": "1.0.0",
+  "description": "我的ESOP插件",
+  "icons":
+  {
+    "16": "icon.gif",
+    "48": "icon.gif",
+    "128": "icon.gif"
+  },
+  "permissions": [ 
+    "tabs" 
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://esop2.futuhk.com/homepage"],
+      "js": ["jquery-1.7.2.js", "esop.js"]
+    }
+  ]
+}
