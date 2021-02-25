@@ -10,7 +10,7 @@ var data = {"当前股价":-1, 			// -1则使用页面上显示的价格
 			"人民币税后比例":0.8*0.83,
 			};
 
-// 全局开关
+// 全局开关(决定自定义股票数据是否生效)
 var global_switch = true;
 // 显示附加标签
 var display_append_label = true;
@@ -149,6 +149,15 @@ function yes_price() {
 	return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.header-wrapper.pc-view > div.container > div > span:nth-child(2) > span");
 }
 
+function get_number(src) {
+	var num_arr = src.match(/[\d,]+/g);
+	if (num_arr == null) {
+		return src;
+	}
+
+	return num_arr[0].replaceAll(',','');
+}
+
 function modify_all() {
 
 	if (exercisable_option_value() == null) {
@@ -162,50 +171,62 @@ function modify_all() {
    
 		// 修正股价
 		//console.log("yes_price", parseFloat(price));
+		var real_price;
 		if (data["当前股价"] == -1) {
 			var m = yes_price().innerHTML.match(/[\d.]+/g);
 			if (m != null) {
-				var price = parseFloat(m[0]);
-				data["当前股价"] = price;
+				real_price = parseFloat(m[0]);
+				data["当前股价"] = real_price;
 			} else {
 				return;
 			}
 		}
 
-		console.log("[esop] modify ...");
+		if (global_switch) {
 
-		// 修改价值
-		modify_obj_set(estimated_total_option_value(), 
-			(data["待归属期权股数"] + data["可行权期权股数"] + data["已行权待出售股数"]) * data["当前股价"]);
+			console.log("[esop] modify ...");
 
-		modify_obj_set(vested_option_value(), data["待归属期权股数"]*data["当前股价"]);
-		modify_obj_set(exercisable_option_value(), data["可行权期权股数"]*data["当前股价"]);
-		modify_obj_set(value_of_exercise_for_sale(), data["已行权待出售股数"]*data["当前股价"]);
+			// 修改价值
+			modify_obj_set(estimated_total_option_value(), 
+				(data["待归属期权股数"] + data["可行权期权股数"] + data["已行权待出售股数"]) * data["当前股价"]);
 
-		// // 修改股数
-		modify_obj_set(vested_option_number(), data["待归属期权股数"]);
-		modify_obj_set(exercisable_option_number(), data["可行权期权股数"]);
-		modify_obj_set(number_of_exercise_for_sale(), data["已行权待出售股数"]);
+			modify_obj_set(vested_option_value(), data["待归属期权股数"]*data["当前股价"]);
+			modify_obj_set(exercisable_option_value(), data["可行权期权股数"]*data["当前股价"]);
+			modify_obj_set(value_of_exercise_for_sale(), data["已行权待出售股数"]*data["当前股价"]);
 
-		// 右下角菜单
-		modify_obj_set(exercisable_option_number2(), data["可行权期权股数"]);
-		modify_obj_set(exercisable_option_value2(), data["可行权期权股数"]*data["当前股价"]);
+			// // 修改股数
+			modify_obj_set(vested_option_number(), data["待归属期权股数"]);
+			modify_obj_set(exercisable_option_number(), data["可行权期权股数"]);
+			modify_obj_set(number_of_exercise_for_sale(), data["已行权待出售股数"]);
 
-		modify_obj_set(marketable_stock_number(), data["可出售股数"]);
-		modify_obj_set(marketable_stock_value(), data["可出售股数"]*data["当前股价"]);
+			// 右下角菜单
+			modify_obj_set(exercisable_option_number2(), data["可行权期权股数"]);
+			modify_obj_set(exercisable_option_value2(), data["可行权期权股数"]*data["当前股价"]);
 
-		// 修改自定义内容
-		if (display_append_label) {
-			// modify_obj_set(now_money_value(), data["可行权期权股数"]*data["当前股价"]*0.8*0.83);
-			append_element(data["可行权期权股数"]*data["当前股价"]*data["人民币税后比例"]);
+			modify_obj_set(marketable_stock_number(), data["可出售股数"]);
+			modify_obj_set(marketable_stock_value(), data["可出售股数"]*data["当前股价"]);
+
+			// 修改自定义内容
+			if (display_append_label) {
+				// modify_obj_set(now_money_value(), data["可行权期权股数"]*data["当前股价"]*0.8*0.83);
+				append_element(data["可行权期权股数"]*data["当前股价"]*data["人民币税后比例"]);
+			}
+
+			// 修改归属日历内容
+			$(".vest").each(function(){
+				var data = $(this).find("div").get(2);
+				modify_obj_int(data, global_scale);
+			});
+		} else {
+			var real_options = get_number(exercisable_option_number().innerHTML);
+			// console.log(real_options);
+			
+			// 修改自定义内容
+			if (display_append_label) {
+				// modify_obj_set(now_money_value(), data["可行权期权股数"]*data["当前股价"]*0.8*0.83);
+				append_element(real_options*real_price*data["人民币税后比例"]);
+			}
 		}
-
-		// 修改归属日历内容
-		$(".vest").each(function(){
-			var data = $(this).find("div").get(2);
-			modify_obj_int(data, global_scale);
-		});
-   
    };
 
    // 当前昨日价格标签重新刷新后，触发所有标签的二次修改
@@ -246,7 +267,7 @@ function log_element(str) {
 
 function append_element(value) {
 	var int_part = modify_str(parseInt(value).toString(), modify_int);
-	console.log(parseInt(value).toString(), int_part);
+	// console.log(parseInt(value).toString(), int_part);
 	var float_part = parseInt((value - parseInt(value))*100);
 	var line_div = document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2)");
 	line_div.innerHTML = line_div.innerHTML + '<div></div><div data-v-70616896="" class="summary-item pending-exercise">\
@@ -289,41 +310,33 @@ function hub_ready() {
 //$(function () {
 $(function () {
 
-	if (global_switch) {
+	var body = document.querySelector("body");
+	$(body).one("DOMSubtreeModified", function(){
 
-		var body = document.querySelector("body");
-		$(body).one("DOMSubtreeModified", function(){
+		// append_element();
+		// test: 打印元素是否生效
+		log_element("body");
+		log_element("body > div:nth-child(3)");
+		log_element("body > div:nth-child(3) > div");
+		log_element("body > div:nth-child(3) > div > div.page-main");
+		log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper");
+		log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div");
+		log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2)");
+		log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div");
+		log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary");
 
-			// append_element();
-			// test: 打印元素是否生效
-			log_element("body");
-			log_element("body > div:nth-child(3)");
-			log_element("body > div:nth-child(3) > div");
-			log_element("body > div:nth-child(3) > div > div.page-main");
-			log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper");
-			log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div");
-			log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2)");
-			log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div");
-			log_element("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary");
-
-			// 预估期权总价值标签修改后，尝试触发数值修改
-			var b = estimated_total_option_value();
-			if (b != null) {
-				$(b).one("DOMSubtreeModified", function(){
-					// console.log("fuck", estimated_total_option_value());
-					modify_all();
-				});
-			} else {
-				console.log("body内容未加载");
-			}
-			
-		});
-
-
+		// 预估期权总价值标签修改后，尝试触发数值修改
+		var b = estimated_total_option_value();
+		if (b != null) {
+			$(b).one("DOMSubtreeModified", function(){
+				// console.log("fuck", estimated_total_option_value());
+				modify_all();
+			});
+		} else {
+			console.log("body内容未加载");
+		}
 		
-
-		
-	}
+	});
 });
 
 
