@@ -21,11 +21,11 @@ Number.prototype.format = function(n, x) {
 };
 
 // 修改整数部分
-function modify_int(s) {
+function modify_int(s, scale) {
 	s = s.replaceAll(",","");
 	var num = parseInt(s.replace(/[^0-9]/ig,""));
   	//console.log(num)
-	var result = s.replace(num, (num*global_scale).format());
+	var result = s.replace(num, (num*scale).format());
 	return result;
 }
 
@@ -49,7 +49,7 @@ function mark_i(i) {
   return "[myesop_"+i+"]";
 }
 
-function modify_str(src, f) {
+function modify_str(src, f, scale=1.0) {
 
   //var src = 'sss 123,444好 66666'; -> "sss 12,344好 6,667"
   //var s = modify_int(src);
@@ -65,7 +65,7 @@ function modify_str(src, f) {
   // console.log(src2)
   // 遍历
   for (var i=0; i<num_arr.length; i++) {
-      var result = f(num_arr[i])
+      var result = f(num_arr[i], scale)
       //console.log(num_arr[i], result)
       // 替换字符串
       src2 = src2.replace(mark_i(i), result)
@@ -76,9 +76,9 @@ function modify_str(src, f) {
 }
 
 // 修改目标内的金钱或股数
-function modify_obj_int(obj) {
+function modify_obj_int(obj, scale) {
 	var s = obj.innerHTML;
-	obj.innerHTML = modify_str(s, modify_int);
+	obj.innerHTML = modify_str(s, modify_int, scale);
 }
 
 // 设置目标内的金钱或股数
@@ -203,7 +203,7 @@ function modify_all() {
 		// 修改归属日历内容
 		$(".vest").each(function(){
 			var data = $(this).find("div").get(2);
-			modify_obj_int(data);
+			modify_obj_int(data, global_scale);
 		});
    
    };
@@ -246,6 +246,7 @@ function log_element(str) {
 
 function append_element(value) {
 	var int_part = modify_str(parseInt(value).toString(), modify_int);
+	console.log(parseInt(value).toString(), int_part);
 	var float_part = parseInt((value - parseInt(value))*100);
 	var line_div = document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2)");
 	line_div.innerHTML = line_div.innerHTML + '<div></div><div data-v-70616896="" class="summary-item pending-exercise">\
