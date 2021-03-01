@@ -83,44 +83,87 @@ function modify_obj_int(obj, scale) {
 
 // 设置目标内的金钱或股数
 function modify_obj_set(obj, value) {
-	var s = obj.innerHTML;
-	$(obj).html(modify_str(s, function(){
-		return modify_set(s, value);
-	}));
+	if (obj) {
+		var s = obj.innerHTML;
+		$(obj).html(modify_str(s, function(){
+			return modify_set(s, value);
+		}));
+	}
+}
+
+function has_restricted_stock() {
+	return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-right > div:nth-child(2) > div.rsu-tag > span");
+}
+
+// 预估总价值
+function total_value() {
+	if (has_restricted_stock()) {
+		return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-left > div > div.summary-item.total > div.summary-total_value > span > span.value-integer");
+	}
+	content.log("total_value: error");
+}
+
+// 预估限制性股票总价值
+function estimated_total_stock_value() {
+	if (has_restricted_stock()) {
+		return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-right > div:nth-child(2) > div.summary-item.total > div.summary-total_value > span > span.value-integer");
+	}
+	content.log("estimated_total_stock_value: error");
 }
 
 // 预估期权总价值
 function estimated_total_option_value() {
+	if (has_restricted_stock()) {
+		return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-right > div:nth-child(1) > div.summary-item.total > div.summary-total_value > span > span.value-integer");
+	}
 	return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div.summary-item.total > div.summary-total_value > span > span.value-integer");
 }
 
 // 待归属期权价值
 function vested_option_value() {
+	if (has_restricted_stock()) {
+		return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-right > div:nth-child(1) > div:nth-child(3) > div.summary-item.pending-option > div.d-ib > span > span.value-integer");
+	}
 	return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2) > div.summary-item.pending-option > div:nth-child(2) > span > span.value-integer");
 }
 
 // 待归属股数
 function vested_option_number() {
+	if (has_restricted_stock()) {
+		return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-right > div:nth-child(1) > div:nth-child(3) > div.summary-item.pending-option > div.stock-num");
+	}
 	return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2) > div.summary-item.pending-option > div.stock-num");
 }
 
 // 可行权期权价值
 function exercisable_option_value() {
+	if (has_restricted_stock()) {
+		return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-right > div:nth-child(1) > div:nth-child(3) > div.summary-item.pending-exercise > div.d-ib > span > span.value-integer");
+	}
 	return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2) > div.summary-item.pending-exercise > div:nth-child(2) > span > span.value-integer");
 }
 
 // 可行权股数
 function exercisable_option_number() {
+	if (has_restricted_stock()) {
+		return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-right > div:nth-child(1) > div:nth-child(3) > div.summary-item.pending-exercise > div.stock-num");
+	}
 	return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2) > div.summary-item.pending-exercise > div.stock-num");
 }
 
 // 已行权待出售价值
 function value_of_exercise_for_sale() {
+	if (has_restricted_stock()) {
+		return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-right > div:nth-child(1) > div:nth-child(3) > div.summary-item.usable-position-option > div.d-ib > span > span.value-integer");
+	}
 	return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2) > div.summary-item.usable-position-option > div:nth-child(2) > span > span.value-integer");
 }
 
 // 已行权待出售股数
 function number_of_exercise_for_sale() {
+	if (has_restricted_stock()) {
+		return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-right > div:nth-child(1) > div:nth-child(3) > div.summary-item.usable-position-option > div.stock-num");
+	}
 	return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2) > div.summary-item.usable-position-option > div.stock-num");
 }
 
@@ -155,7 +198,7 @@ function get_number(src) {
 		return src;
 	}
 
-	return num_arr[0].replaceAll(',','');
+	return parseInt(num_arr[0].replaceAll(',',''));
 }
 
 function modify_all() {
@@ -206,10 +249,13 @@ function modify_all() {
 			modify_obj_set(marketable_stock_number(), data["可出售股数"]);
 			modify_obj_set(marketable_stock_value(), data["可出售股数"]*data["当前股价"]);
 
+			// 预估总价值
+			modify_obj_set(total_value(), get_number(estimated_total_option_value().innerHTML) + get_number(estimated_total_stock_value().innerHTML));			
+
 			// 修改自定义内容
 			if (display_append_label) {
 				// modify_obj_set(now_money_value(), data["可行权期权股数"]*data["当前股价"]*0.8*0.83);
-				append_element(data["可行权期权股数"]*data["当前股价"]*data["人民币税后比例"]);
+				append_element("可行权期权价值 (CNY)", data["可行权期权股数"]*data["当前股价"]*data["人民币税后比例"]);
 			}
 
 			// 修改归属日历内容
@@ -224,7 +270,7 @@ function modify_all() {
 			// 修改自定义内容
 			if (display_append_label) {
 				// modify_obj_set(now_money_value(), data["可行权期权股数"]*data["当前股价"]*0.8*0.83);
-				append_element(real_options*real_price*data["人民币税后比例"]);
+				append_element("可行权期权价值 (CNY)", real_options*real_price*data["人民币税后比例"]);
 			}
 		}
    };
@@ -265,13 +311,13 @@ function log_element(str) {
 	console.log("fuck100", kwai);
 }
 
-function append_element(value) {
+function append_element(title, value) {
 	var int_part = modify_str(parseInt(value).toString(), modify_int);
 	// console.log(parseInt(value).toString(), int_part);
 	var float_part = parseInt((value - parseInt(value))*100);
 	var line_div = document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2)");
 	line_div.innerHTML = line_div.innerHTML + '<div></div><div data-v-70616896="" class="summary-item pending-exercise">\
-	<div data-v-70616896="" class="summary-title">可行权期权价值 (CNY)\
+	<div data-v-70616896="" class="summary-title">'+title+'\
         <span data-v-70616896="" class="tax-tag">税后</span> <div data-v-0afa8121="" data-v-70616896="" class="ui-notice tips-wrapper"><span data-v-0afa8121="" class="ui-notice-trigger"><i data-v-0afa8121="" class="ui-icon icon-trigger icon-tips"></i></span> <div data-v-0afa8121="" class="ui-notice-mask" style="display: none;"></div> <div data-v-0afa8121="" class="ui-notice-wrapper" style="left: 20px; top: 20px;"><div data-v-0afa8121="" class="ui-notice-content"><i data-v-0afa8121="" class="ui-icon icon-close ui-notice-close"></i> <div data-v-0afa8121="" class="ui-notice-text"><p data-v-70616896="" data-v-0afa8121="" class="tips-item">已行权待出售价值=行权后获得且未卖出的股票数量*上个交易日收盘价</p></div></div></div></div></div>\
 		<div data-v-70616896="" class=""><span data-v-70616896="" class="exact-value"><span data-v-70616896="" class="value-integer">'+int_part+'</span><span data-v-70616896="" class="value-dot">.</span><span data-v-70616896="" class="value-float">'+float_part+'</span></span></div>\
 	</div>';
