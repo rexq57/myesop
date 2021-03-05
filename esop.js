@@ -7,7 +7,7 @@ var data = {"当前股价":-1, 			// -1则使用页面上显示的价格
             "可行权期权股数":46772,
 			"已行权待出售股数":0,
 			"可出售股数":0,
-			"人民币税后比例":0.8*0.83,
+			"人民币税后比例":0.55*0.83,
 			};
 
 // 全局开关(决定自定义股票数据是否生效)
@@ -250,7 +250,7 @@ function modify_all() {
 			modify_obj_set(marketable_stock_value(), data["可出售股数"]*data["当前股价"]);
 
 			// 预估总价值
-			modify_obj_set(total_value(), get_number(estimated_total_option_value().innerHTML) + get_number(estimated_total_stock_value().innerHTML));			
+			modify_obj_set(total_value(), get_number(estimated_total_option_value().innerHTML) + get_number(estimated_total_stock_value().innerHTML));
 
 			// 修改自定义内容
 			if (display_append_label) {
