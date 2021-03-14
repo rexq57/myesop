@@ -100,7 +100,7 @@ function total_value() {
 	if (has_restricted_stock()) {
 		return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-left > div > div.summary-item.total > div.summary-total_value > span > span.value-integer");
 	}
-	content.log("total_value: error");
+	console.log("total_value: error");
 }
 
 // 预估限制性股票总价值
@@ -108,7 +108,7 @@ function estimated_total_stock_value() {
 	if (has_restricted_stock()) {
 		return document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-right > div:nth-child(2) > div.summary-item.total > div.summary-total_value > span > span.value-integer");
 	}
-	content.log("estimated_total_stock_value: error");
+	console.log("estimated_total_stock_value: error");
 }
 
 // 预估期权总价值
@@ -316,10 +316,10 @@ function append_element(title, value) {
 	// console.log(parseInt(value).toString(), int_part);
 	var float_part = parseInt((value - parseInt(value))*100);
 	var line_div = document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary > div.summary-right > div > div:nth-child(2)");
-	line_div.innerHTML = line_div.innerHTML + '<div></div><div data-v-70616896="" class="summary-item pending-exercise">\
-	<div data-v-70616896="" class="summary-title">'+title+'\
-        <span data-v-70616896="" class="tax-tag">税后</span> <div data-v-0afa8121="" data-v-70616896="" class="ui-notice tips-wrapper"><span data-v-0afa8121="" class="ui-notice-trigger"><i data-v-0afa8121="" class="ui-icon icon-trigger icon-tips"></i></span> <div data-v-0afa8121="" class="ui-notice-mask" style="display: none;"></div> <div data-v-0afa8121="" class="ui-notice-wrapper" style="left: 20px; top: 20px;"><div data-v-0afa8121="" class="ui-notice-content"><i data-v-0afa8121="" class="ui-icon icon-close ui-notice-close"></i> <div data-v-0afa8121="" class="ui-notice-text"><p data-v-70616896="" data-v-0afa8121="" class="tips-item">已行权待出售价值=行权后获得且未卖出的股票数量*上个交易日收盘价</p></div></div></div></div></div>\
-		<div data-v-70616896="" class=""><span data-v-70616896="" class="exact-value"><span data-v-70616896="" class="value-integer">'+int_part+'</span><span data-v-70616896="" class="value-dot">.</span><span data-v-70616896="" class="value-float">'+float_part+'</span></span></div>\
+	line_div.innerHTML = line_div.innerHTML + '<div></div><div data-v-6f39f7ee="" class="summary-item pending-exercise">\
+	<div data-v-6f39f7ee class="summary-title">'+title+'\
+        <span data-v-6f39f7ee class="tax-tag">税后</span> <div data-v-5d3399f0="" data-v-6f39f7ee="" class="ui-notice tips-wrapper"><span data-v-5d3399f0="" class="ui-notice-trigger"><i data-v-5d3399f0="" class="ui-icon icon-trigger icon-tips"></i></span> <div data-v-5d3399f0="" class="ui-notice-mask" style="display: none;"></div> <div data-v-5d3399f0="" class="ui-notice-wrapper" style="left: 20px; top: 20px;"><div data-v-5d3399f0="" class="ui-notice-content"><i data-v-5d3399f0="" class="ui-icon icon-close ui-notice-close"></i> <div data-v-5d3399f0="" class="ui-notice-text"><p data-v-6f39f7ee="" data-v-5d3399f0="" class="tips-item">已行权待出售价值=行权后获得且未卖出的股票数量*上个交易日收盘价</p></div></div></div></div></div>\
+		<div data-v-6f39f7ee class=""><span data-v-6f39f7ee="" class="exact-value"><span data-v-6f39f7ee="" class="value-integer">'+int_part+'</span><span data-v-6f39f7ee="" class="value-dot">.</span><span data-v-6f39f7ee="" class="value-float">'+float_part+'</span></span></div>\
 	</div>';
 }
 
@@ -357,7 +357,7 @@ function hub_ready() {
 $(function () {
 
 	var body = document.querySelector("body");
-	$(body).one("DOMSubtreeModified", function(){
+	$(body).on("DOMSubtreeModified", function(){
 
 		// append_element();
 		// test: 打印元素是否生效
@@ -378,6 +378,7 @@ $(function () {
 				// console.log("fuck", estimated_total_option_value());
 				modify_all();
 			});
+			$(body).off('DOMSubtreeModified');
 		} else {
 			console.log("body内容未加载");
 		}
