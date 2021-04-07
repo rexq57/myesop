@@ -201,6 +201,12 @@ function get_number(src) {
 	return parseInt(num_arr[0].replaceAll(',',''));
 }
 
+function is_appended() {
+
+	var obj = document.querySelector("body > div:nth-child(3) > div > div.page-main > div.content-wrapper > div > div:nth-child(2) > div > div.summary.option-rsu-both > div.summary-right > div:nth-child(1) > div.summary-item.total > div:nth-child(4) > div.summary-title");
+	return obj != null;
+}
+
 function modify_all() {
 
 	if (exercisable_option_value() == null) {
@@ -253,7 +259,7 @@ function modify_all() {
 			modify_obj_set(total_value(), get_number(estimated_total_option_value().innerHTML) + get_number(estimated_total_stock_value().innerHTML));
 
 			// 修改自定义内容
-			if (display_append_label) {
+			if (display_append_label && !is_appended()) {
 				// modify_obj_set(now_money_value(), data["可行权期权股数"]*data["当前股价"]*0.8*0.83);
 				append_element("可行权期权价值 (CNY)", data["可行权期权股数"]*data["当前股价"]*data["人民币税后比例"]);
 			}
@@ -268,7 +274,7 @@ function modify_all() {
 			// console.log(real_options);
 			
 			// 修改自定义内容
-			if (display_append_label) {
+			if (display_append_label && !is_appended()) {
 				// modify_obj_set(now_money_value(), data["可行权期权股数"]*data["当前股价"]*0.8*0.83);
 				append_element("可行权期权价值 (CNY)", real_options*real_price*data["人民币税后比例"]);
 			}
